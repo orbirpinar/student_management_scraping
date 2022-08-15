@@ -15,7 +15,7 @@ def get_teachers():
     city_code = request.json["city_code"]
     school_website = request.json['school_website']
     fileName = f"{school_code}.json"
-    if (exists(fileName)):
+    if exists(fileName):
         data = get_from_cache(fileName)
         return jsonify(
             {'data': data}
@@ -80,7 +80,6 @@ def csv_to_json():
             row['level'] = level.replace(". Sınıf", "").strip()
             row['branch'] = branch.replace("Şubesi", "").strip()
             json_list.append(row)
-    # convert python jsonArray to JSON String and write to file
     write_json("students.json", json_list)
     return json_list
 
@@ -92,6 +91,6 @@ def write_json(file_name, content):
         jsonf.write(jsonString)
 
 
-def get_from_cache(fileName):
-    with open(fileName, encoding='utf-8') as file:
+def get_from_cache(file_name):
+    with open(file_name, encoding='utf-8') as file:
         return json.load(file)
