@@ -10,18 +10,17 @@ app = Flask(__name__)
 
 @app.route("/api/v1/teachers", methods=['POST'])
 def get_teachers():
-    school_code = request.json["school_code"]
-    district_code = request.json['district_code']
-    city_code = request.json["city_code"]
+    school_name = request.json['school_name']
     school_website = request.json['school_website']
-    fileName = f"{school_code}.json"
+    school_name = school_name.replace(' ', "_")
+    fileName = f"teachers_data/{school_name}_teachers.json"
     if exists(fileName):
         data = get_from_cache(fileName)
         return jsonify(
             {'data': data}
         )
 
-    url = f"{school_website}/{city_code}/{district_code}/{school_code}/teskilat_semasi.html"
+    url = f"{school_website}/teskilat_semasi.html"
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html.parser')
     all_teacher_link_tag = soup.select(".sitemap li a")
@@ -34,7 +33,7 @@ def get_teachers():
         department = i.get("title", "No department")
         teacherObject = {'firstname': firstname, 'lastname': lastname, 'department': department}
         teachers.append(teacherObject)
-    write_json(f"{school_code}.json", teachers)
+    write_json(fileName, teachers)
     return jsonify(
         {'data': teachers}
     )
